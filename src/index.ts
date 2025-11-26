@@ -1,5 +1,5 @@
 import { serve } from "@hono/node-server";
-import { Hono } from "hono";
+import { Context, Hono } from "hono";
 import { cors } from "hono/cors";
 import { PORT } from "./env";
 import { databaseConnection } from "./db/db";
@@ -16,12 +16,14 @@ app.use(
     exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
     credentials: true,
     maxAge: 600,
-  }),
+  })
 );
 
-app.on(["POST", "GET"], "/api/auth/**", (c) => auth.handler(c.req.raw));
+app.on(["POST", "GET"], "/api/auth/**", (c: Context) =>
+  auth.handler(c.req.raw)
+);
 
-app.get("/", (c) => {
+app.get("/", (c: Context) => {
   return c.text("Hello Hono!");
 });
 
@@ -33,6 +35,6 @@ databaseConnection().then(() => {
     },
     (info) => {
       console.log(`Server is running on http://localhost:${info.port}`);
-    },
+    }
   );
 });
